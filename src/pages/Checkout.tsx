@@ -6,7 +6,7 @@ import Icon from '../components/Icon'
 import { TelaCarregando } from '../components/Esqueleto'
 import { useTitulo } from '../lib/titulo'
 import { useAuth } from '../lib/auth'
-import { supabase } from '../lib/supabase'
+import { MODO_DEMO, supabase } from '../lib/supabase'
 import { Botao } from '../components/Botao'
 import { LinkBotao } from '../components/Botao'
 import { brl, campo, lerRef, METODO } from '../lib/util'
@@ -76,7 +76,7 @@ export default function Checkout() {
         <h1 className="mt-2 text-4xl leading-tight">Falta só o pagamento.</h1>
         <p className="mt-3 text-muted">{p.titulo} · <strong className="font-mono text-ink">{brl(pedido.valor_centavos)}</strong> · {METODO[pedido.metodo]}{pedido.parcelas > 1 ? ` em ${pedido.parcelas}x` : ''}</p>
         <p className="mt-5 rounded-xl border border-outlier/40 bg-outlier/10 p-4 text-sm">Assim que o pagamento for aprovado, seu acesso é liberado automaticamente em “Meus cursos”.</p>
-        {import.meta.env.VITE_DEMO === 'true' && (
+        {MODO_DEMO && (
           <div className="mt-5 rounded-xl border border-dashed border-brand/60 p-4 text-sm">
             <p className="text-xs font-semibold uppercase tracking-widest text-brand">Modo demonstração</p>
             <p className="mt-1 text-muted">Não há gateway conectado. Use o botão para simular a aprovação do pagamento.</p>

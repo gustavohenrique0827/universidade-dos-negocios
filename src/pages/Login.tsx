@@ -6,7 +6,7 @@ import CurveHero from '../components/CurveHero'
 import Dividido from '../components/Dividido'
 import Icon from '../components/Icon'
 import { useAuth } from '../lib/auth'
-import { supabase } from '../lib/supabase'
+import { MODO_DEMO, supabase } from '../lib/supabase'
 import { useTitulo } from '../lib/titulo'
 
 type Erros = Partial<Record<'nome' | 'email' | 'senha' | 'form', string>>
@@ -98,7 +98,7 @@ export default function Login() {
             <Botao larga tamanho="g" carregando={enviando}>{modo === 'entrar' ? 'Entrar' : 'Criar conta'}</Botao>
           </form>
 
-          {import.meta.env.VITE_DEMO === 'true' && (
+          {MODO_DEMO && (
             <div className="mt-6 rounded-xl border border-dashed border-brand/50 p-4">
               <p className="text-xs font-semibold uppercase tracking-widest text-brand">Modo demonstração</p>
               <p className="mt-1 text-xs text-muted">Escolha uma conta para preencher o acesso. Senha: demo1234.</p>

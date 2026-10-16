@@ -5,6 +5,7 @@ import { Logo } from './components/Logo'
 import Rodape from './components/Rodape'
 import Shell from './components/Shell'
 import { useAuth } from './lib/auth'
+import { MODO_DEMO } from './lib/supabase'
 import Afiliacao from './pages/aluno/Afiliacao'
 import MeusCursos from './pages/aluno/MeusCursos'
 import Certificado from './pages/Certificado'
@@ -73,8 +74,15 @@ function Header() {
 const PularNav = () => <a href="#conteudo" className="sr-only z-50 rounded-md bg-brand px-3 py-2 font-semibold text-on-brand focus:not-sr-only focus:fixed focus:left-3 focus:top-3">Pular para o conteúdo</a>
 const comHeader = () => <><PularNav /><Header /><div id="conteudo" tabIndex={-1} className="min-h-[70vh] outline-none"><Outlet /></div><Rodape /></>
 
+function FaixaDemo() {
+  if (!MODO_DEMO) return null
+  return <div role="note" className="bg-brand px-4 py-1.5 text-center text-xs font-semibold text-on-brand">Versão de demonstração: os dados são fictícios e não são salvos. Não use dados reais.</div>
+}
+
 export default function App() {
   return (
+    <>
+    <FaixaDemo />
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/checkout/:slug" element={<Checkout />} />
@@ -106,5 +114,6 @@ export default function App() {
       </Route>
       <Route path="/" element={<Inicio />} />
     </Routes>
+    </>
   )
 }
