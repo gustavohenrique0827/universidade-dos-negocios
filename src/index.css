@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #0b0c10;
+  --color-surface: #14161c;
+  --color-wash: #1d2029;
+  --color-line: #2a2e39;
+  --color-ink: #f2f3f7;
+  --color-muted: #9aa1b2;
+  --color-brand: #ff6a1a;
+  --color-brand-dark: #ff8340;
+  --color-on-brand: #1a0b00;
+  --color-outlier: #ffc933;
+  --color-ok: #3ddc97;
+  --color-bad: #ff7b7b;
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Tema escuro (padrão) e claro: só trocam os valores dos tokens. */
+:root, [data-theme="dark"] {
+  color-scheme: dark;
+  --color-paper: #0b0c10; --color-surface: #14161c; --color-wash: #1d2029; --color-line: #2a2e39;
+  --color-ink: #f2f3f7; --color-muted: #9aa1b2; --color-brand: #ff6a1a; --color-brand-dark: #ff8340;
+  --color-on-brand: #1a0b00; --color-outlier: #ffc933; --color-ok: #3ddc97; --color-bad: #ff7b7b;
+}
+[data-theme="light"] {
+  color-scheme: light;
+  --color-paper: #f5f6f8; --color-surface: #ffffff; --color-wash: #eceff4; --color-line: #dde1e8;
+  --color-ink: #12151c; --color-muted: #5b6475; --color-brand: #d9480f; --color-brand-dark: #b93c0a;
+  --color-on-brand: #ffffff; --color-outlier: #f5a800; --color-ok: #12805a; --color-bad: #c92a2a;
+}
+
+body { @apply bg-paper font-sans text-ink antialiased; }
+h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
+h1 { font-weight: 800; }
+h2, h3 { font-weight: 700; }
+:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+
+/* o ponto fora da curva entra uma vez, depois descansa */
+@keyframes outlier-in {
+  from { transform: translate(-60px, 60px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.outlier-dot { animation: outlier-in 900ms cubic-bezier(.2,.8,.2,1) 300ms both; }
+@keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.curve-line { stroke-dasharray: 1; animation: draw 1400ms ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .outlier-dot, .curve-line { animation: none; }
+}
+
+@keyframes curva { to { stroke-dashoffset: -1; } }

@@ -1,0 +1,110 @@
+import type { ReactNode } from 'react'
+import { Link, Navigate, NavLink, Outlet, Route, Routes } from 'react-router-dom'
+import { TelaCarregando } from './components/Esqueleto'
+import { Logo } from './components/Logo'
+import Rodape from './components/Rodape'
+import Shell from './components/Shell'
+import { useAuth } from './lib/auth'
+import Afiliacao from './pages/aluno/Afiliacao'
+import MeusCursos from './pages/aluno/MeusCursos'
+import Certificado from './pages/Certificado'
+import Conta from './pages/Conta'
+import Checkout from './pages/Checkout'
+import Estudo from './components/Estudo'
+import Aula from './pages/aluno/Aula'
+import AtividadeAluno from './pages/aluno/AtividadeAluno'
+import CursoHome from './pages/aluno/CursoHome'
+import Legal from './pages/Legal'
+import Login from './pages/Login'
+import NaoEncontrada from './pages/NaoEncontrada'
+import Loja from './pages/Loja'
+import Afiliados from './pages/painel/Afiliados'
+import Alunos from './pages/painel/Alunos'
+import Cupons from './pages/painel/Cupons'
+import Dashboard from './pages/painel/Dashboard'
+import Financeiro from './pages/painel/Financeiro'
+import ProdutoEditor from './pages/painel/ProdutoEditor'
+import Produtos from './pages/painel/Produtos'
+import Vendas from './pages/painel/Vendas'
+import Produto from './pages/Produto'
+
+function Protected({ children, produtor }: { children: ReactNode; produtor?: boolean }) {
+  const { session, profile, loading } = useAuth()
+  if (loading) return <TelaCarregando />
+  if (!session) return <Navigate to="/login" replace />
+  if (produtor && profile?.role === 'aluno') return <Navigate to="/meus-cursos" replace />
+  return <>{children}</>
+}
+
+function Inicio() {
+  const { session, profile, loading } = useAuth()
+  if (loading) return <TelaCarregando />
+  if (!session) return <Navigate to="/loja" replace />
+  return <Navigate to={profile?.role === 'aluno' ? '/meus-cursos' : '/painel'} replace />
+}
+
+function Header() {
+  const { session } = useAuth()
+  const link = ({ isActive }: { isActive: boolean }) => `hidden rounded-md px-3 py-2 text-sm font-medium transition sm:block ${isActive ? 'text-ink' : 'text-muted hover:text-ink'}`
+  return (
+    <header className="sticky top-0 z-20 border-b border-line bg-paper/90 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+        <div className="flex items-center gap-6">
+          <Link to="/loja" aria-label="Universidade dos Negócios, início"><Logo /></Link>
+          <nav aria-label="Principal" className="flex items-center">
+            <NavLink to="/loja" className={link}>Cursos</NavLink>
+            <NavLink to="/afiliacao" className={link}>Seja afiliado</NavLink>
+            <NavLink to="/painel" className={link}>Venda seu curso</NavLink>
+          </nav>
+        </div>
+        <div className="flex items-center gap-2">
+          {session ? <Link to="/" className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-dark">Meu painel</Link> : (
+            <>
+              <Link to="/login" className="rounded-lg px-3 py-2 text-sm font-semibold text-ink hover:bg-wash">Entrar</Link>
+              <Link to="/login?modo=criar" className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-dark">Criar conta</Link>
+            </>
+          )}
+        </div>
+      </div>
+    </header>
+  )
+}
+
+const PularNav = () => <a href="#conteudo" className="sr-only z-50 rounded-md bg-brand px-3 py-2 font-semibold text-on-brand focus:not-sr-only focus:fixed focus:left-3 focus:top-3">Pular para o conteúdo</a>
+const comHeader = () => <><PularNav /><Header /><div id="conteudo" tabIndex={-1} className="min-h-[70vh] outline-none"><Outlet /></div><Rodape /></>
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/checkout/:slug" element={<Checkout />} />
+      <Route element={comHeader()}>
+        <Route path="/loja" element={<Loja />} />
+        <Route path="/p/:slug" element={<Produto />} />
+        <Route path="/certificado/:codigo" element={<Certificado />} />
+        <Route path="/termos" element={<Legal tipo="termos" />} />
+        <Route path="/privacidade" element={<Legal tipo="privacidade" />} />
+        <Route path="*" element={<NaoEncontrada />} />
+      </Route>
+      <Route element={<Protected><Estudo /></Protected>}>
+        <Route path="/meus-cursos" element={<MeusCursos />} />
+        <Route path="/curso/:id" element={<CursoHome />} />
+        <Route path="/curso/:id/aula/:aulaId" element={<Aula />} />
+        <Route path="/curso/:id/atividade/:aid" element={<AtividadeAluno />} />
+      </Route>
+      <Route element={<Protected><Shell /></Protected>}>
+        <Route path="/afiliacao" element={<Afiliacao />} />
+        <Route path="/conta" element={<Conta />} />
+        <Route path="/painel" element={<Protected produtor><Dashboard /></Protected>} />
+        <Route path="/painel/produtos" element={<Protected produtor><Produtos /></Protected>} />
+        <Route path="/painel/produtos/:id" element={<Protected produtor><ProdutoEditor /></Protected>} />
+        <Route path="/painel/vendas" element={<Protected produtor><Vendas /></Protected>} />
+        <Route path="/painel/alunos" element={<Protected produtor><Alunos /></Protected>} />
+        <Route path="/painel/cupons" element={<Protected produtor><Cupons /></Protected>} />
+        <Route path="/painel/afiliados" element={<Protected produtor><Afiliados /></Protected>} />
+        <Route path="/painel/financeiro" element={<Protected produtor><Financeiro /></Protected>} />
+      </Route>
+      <Route path="/" element={<Inicio />} />
+    </Routes>
+  )
+}
