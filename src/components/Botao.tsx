@@ -2,14 +2,14 @@ import { Link } from 'react-router-dom'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 export type Variante = 'primario' | 'secundario' | 'terciario' | 'perigo'
-const BASE = 'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition focus-visible:outline-2 disabled:cursor-not-allowed disabled:opacity-50'
+const BASE = 'inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]'
 const VARIANTES: Record<Variante, string> = {
-  primario: 'bg-brand text-on-brand hover:bg-brand-dark',
-  secundario: 'border border-line bg-surface text-ink hover:border-brand hover:text-brand',
+  primario: 'bg-gradient-to-r from-brand to-brand-dark text-on-brand shadow-lg shadow-brand/20 hover:shadow-brand/35 hover:-translate-y-0.5 active:translate-y-0',
+  secundario: 'border border-line bg-surface/90 text-ink shadow-sm hover:border-brand/60 hover:bg-wash hover:text-brand hover:-translate-y-0.5 active:translate-y-0',
   terciario: 'text-muted hover:bg-wash hover:text-ink',
-  perigo: 'bg-bad text-on-brand hover:opacity-90',
+  perigo: 'bg-bad text-on-brand shadow-lg shadow-bad/20 hover:opacity-95 hover:-translate-y-0.5 active:translate-y-0',
 }
-const TAMANHOS = { p: 'px-3 py-1.5 text-sm', m: 'px-4 py-2 text-sm', g: 'px-6 py-3 text-base' }
+const TAMANHOS = { p: 'px-3.5 py-1.5 text-xs', m: 'px-4.5 py-2.5 text-sm', g: 'px-6 py-3.5 text-base' }
 
 export const classeBotao = (v: Variante = 'primario', t: keyof typeof TAMANHOS = 'm') => `${BASE} ${VARIANTES[v]} ${TAMANHOS[t]}`
 

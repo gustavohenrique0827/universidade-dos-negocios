@@ -15,10 +15,10 @@ export function lerRef(slug: string): string | null {
   } catch { return null }
 }
 
-export const campo = 'rounded-lg border border-line bg-surface px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20'
-export const botao = 'inline-block rounded-lg bg-brand px-4 py-2 text-center text-sm font-semibold text-on-brand transition hover:bg-brand-dark disabled:opacity-50'
-export const botaoSec = 'inline-block rounded-lg border border-line bg-surface px-3 py-1.5 text-sm font-medium hover:border-brand hover:text-brand'
-export const cartao = 'rounded-xl border border-line bg-surface'
+export const campo = 'rounded-xl border border-line bg-surface/80 px-3.5 py-2.5 text-sm text-ink outline-none transition duration-150 placeholder:text-muted/60 focus:border-brand focus:bg-surface focus:ring-4 focus:ring-brand/15 shadow-inner'
+export const botao = 'inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand to-brand-dark px-5 py-2.5 text-center text-sm font-bold text-on-brand shadow-lg shadow-brand/20 transition-all duration-200 hover:shadow-brand/35 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none'
+export const botaoSec = 'inline-flex items-center justify-center gap-2 rounded-xl border border-line bg-surface/90 px-4 py-2 text-sm font-semibold text-ink shadow-sm transition-all duration-200 hover:border-brand/60 hover:bg-wash hover:text-brand hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]'
+export const cartao = 'rounded-2xl border border-line/90 bg-surface/85 backdrop-blur-md shadow-xl shadow-black/20 transition-all duration-200'
 
 export const TAXA_PLATAFORMA = 0.099
 export const liquido = (valor: number, comissao = 0) => Math.floor(valor * (1 - TAXA_PLATAFORMA)) - comissao

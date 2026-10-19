@@ -4,6 +4,8 @@ import { TelaCarregando } from './components/Esqueleto'
 import { Logo } from './components/Logo'
 import Rodape from './components/Rodape'
 import Shell from './components/Shell'
+import Icon from './components/Icon'
+import { useTema } from './lib/tema'
 import { useAuth } from './lib/auth'
 import { MODO_DEMO } from './lib/supabase'
 import Afiliacao from './pages/aluno/Afiliacao'
@@ -46,23 +48,55 @@ function Inicio() {
 
 function Header() {
   const { session } = useAuth()
-  const link = ({ isActive }: { isActive: boolean }) => `hidden rounded-md px-3 py-2 text-sm font-medium transition sm:block ${isActive ? 'text-ink' : 'text-muted hover:text-ink'}`
+  const { tema, alternar } = useTema()
+  const link = ({ isActive }: { isActive: boolean }) =>
+    `relative rounded-xl px-3.5 py-2 text-sm font-medium transition-all duration-150 ${
+      isActive ? 'text-ink bg-wash/80 font-semibold shadow-xs' : 'text-muted hover:text-ink hover:bg-wash/50'
+    }`
+
   return (
-    <header className="sticky top-0 z-20 border-b border-line bg-paper/90 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-line/70 bg-paper/75 backdrop-blur-xl transition-colors">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <div className="flex items-center gap-6">
-          <Link to="/loja" aria-label="Universidade dos Negócios, início"><Logo /></Link>
-          <nav aria-label="Principal" className="flex items-center">
+        <div className="flex items-center gap-8">
+          <Link to="/loja" aria-label="Universidade dos Negócios, início" className="transition-transform hover:scale-[1.01]">
+            <Logo />
+          </Link>
+          <nav aria-label="Principal" className="hidden items-center gap-1.5 md:flex">
             <NavLink to="/loja" className={link}>Cursos</NavLink>
             <NavLink to="/afiliacao" className={link}>Seja afiliado</NavLink>
             <NavLink to="/painel" className={link}>Venda seu curso</NavLink>
           </nav>
         </div>
         <div className="flex items-center gap-2">
-          {session ? <Link to="/" className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-dark">Meu painel</Link> : (
+          <button
+            onClick={alternar}
+            aria-label={tema === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
+            title={tema === 'dark' ? 'Tema claro' : 'Tema escuro'}
+            className="flex size-9 items-center justify-center rounded-xl text-muted hover:bg-wash hover:text-ink transition-colors"
+          >
+            <Icon nome={tema === 'dark' ? 'sol' : 'lua'} tamanho={17} />
+          </button>
+          {session ? (
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-brand to-brand-dark px-4 py-2 text-sm font-bold text-on-brand shadow-lg shadow-brand/20 transition-all hover:shadow-brand/35 hover:-translate-y-0.5"
+            >
+              Meu painel
+            </Link>
+          ) : (
             <>
-              <Link to="/login" className="rounded-lg px-3 py-2 text-sm font-semibold text-ink hover:bg-wash">Entrar</Link>
-              <Link to="/login?modo=criar" className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-dark">Criar conta</Link>
+              <Link
+                to="/login"
+                className="rounded-xl px-3.5 py-2 text-sm font-semibold text-ink/80 hover:bg-wash hover:text-ink transition-colors"
+              >
+                Entrar
+              </Link>
+              <Link
+                to="/login?modo=criar"
+                className="rounded-xl bg-gradient-to-r from-brand to-brand-dark px-4 py-2 text-sm font-bold text-on-brand shadow-md shadow-brand/20 hover:shadow-brand/35 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+              >
+                Criar conta
+              </Link>
             </>
           )}
         </div>
