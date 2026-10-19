@@ -8,7 +8,7 @@ import Drawer from '../../components/Drawer'
 import { EsqueletoGrade } from '../../components/Esqueleto'
 import Icon from '../../components/Icon'
 import Menu from '../../components/Menu'
-import { Badge, Kpi, PageHeader, Vazio } from '../../components/Ui'
+import { Kpi, PageHeader, Vazio } from '../../components/Ui'
 import { useAuth } from '../../lib/auth'
 import { supabase } from '../../lib/supabase'
 import { useTitulo } from '../../lib/titulo'
@@ -106,16 +106,76 @@ export default function Produtos() {
       {produtos === null ? <EsqueletoGrade /> : produtos.length === 0 ? (
         <Vazio titulo="Crie seu primeiro produto" texto="Em três passos você define nome, preço e abre o editor para montar módulos e aulas." acao={<Botao onClick={abrir}>Criar produto</Botao>} />
       ) : lista.length === 0 ? <Vazio titulo="Nenhum produto encontrado" texto="Ajuste a busca ou o filtro." /> : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {lista.map((p) => (
-            <article key={p.id} className={`${cartao} group relative overflow-hidden transition hover:border-brand`}>
-              <Link to={`/painel/produtos/${p.id}`} aria-label={`Editar ${p.titulo}`}><Capa url={p.capa_url} titulo={p.titulo} /></Link>
-              <div className="p-4">
-                <div className="mb-1 flex items-center justify-between gap-2"><Badge className={p.publicado ? 'bg-ok/10 text-ok' : 'bg-wash text-muted'}>{p.publicado ? 'Publicado' : 'Rascunho'}</Badge>
-                  <Menu rotulo={`Ações de ${p.titulo}`} itens={[{ rotulo: 'Editar', onClick: () => nav(`/painel/produtos/${p.id}`) }, { rotulo: 'Ver página de vendas', onClick: () => nav(`/p/${p.slug}`) }, { rotulo: 'Duplicar', onClick: () => duplicar(p) }, { rotulo: p.publicado ? 'Despublicar' : 'Publicar', onClick: () => alternar(p) }]} /></div>
-                <Link to={`/painel/produtos/${p.id}`}><h2 className="text-lg leading-snug hover:text-brand">{p.titulo}</h2></Link>
-                <p className="mt-1 font-mono text-sm text-brand">{p.preco_centavos === 0 ? 'Grátis' : brl(p.preco_centavos)}</p>
-                <dl className="mt-3 grid grid-cols-2 gap-2 border-t border-line pt-3 text-xs"><div><dt className="text-muted">Vendas</dt><dd className="font-mono text-sm">{vendas[p.id] ?? 0}</dd></div><div><dt className="text-muted">Receita</dt><dd className="font-mono text-sm">{brl(receita[p.id] ?? 0)}</dd></div></dl>
+            <article
+              key={p.id}
+              className="group relative flex flex-col overflow-hidden rounded-2xl border border-line/70 bg-surface/60 transition-all duration-200 hover:-translate-y-0.5 hover:border-line hover:bg-surface/90 hover:shadow-lg hover:shadow-black/25"
+            >
+              {/* Capa com overlay de status discreto */}
+              <div className="relative aspect-video w-full overflow-hidden border-b border-line/50">
+                <Link to={`/painel/produtos/${p.id}`} aria-label={`Editar ${p.titulo}`} className="block h-full w-full">
+                  <Capa url={p.capa_url} titulo={p.titulo} className="transition-transform duration-500 group-hover:scale-105" />
+                </Link>
+
+                <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full border border-white/10 bg-black/70 px-2.5 py-1 text-[11px] font-semibold backdrop-blur-md">
+                  <span className={`size-1.5 rounded-full ${p.publicado ? 'bg-ok animate-pulse' : 'bg-muted'}`} />
+                  <span className={p.publicado ? 'text-ok' : 'text-muted'}>
+                    {p.publicado ? 'Publicado' : 'Rascunho'}
+                  </span>
+                </div>
+
+                {p.categoria && (
+                  <span className="absolute right-3 top-3 rounded-full border border-white/10 bg-black/60 px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-muted backdrop-blur-md">
+                    {p.categoria}
+                  </span>
+                )}
+              </div>
+
+              {/* Informações do Card */}
+              <div className="flex flex-1 flex-col justify-between p-5">
+                <div>
+                  <div className="flex items-start justify-between gap-3">
+                    <Link
+                      to={`/painel/produtos/${p.id}`}
+                      className="font-semibold text-ink line-clamp-1 transition group-hover:text-brand"
+                      title={p.titulo}
+                    >
+                      {p.titulo}
+                    </Link>
+                    <Menu
+                      rotulo={`Ações de ${p.titulo}`}
+                      itens={[
+                        { rotulo: 'Editar conteúdo', onClick: () => nav(`/painel/produtos/${p.id}`) },
+                        { rotulo: 'Ver página de vendas', onClick: () => nav(`/p/${p.slug}`) },
+                        { rotulo: 'Duplicar produto', onClick: () => duplicar(p) },
+                        { rotulo: p.publicado ? 'Despublicar' : 'Publicar na loja', onClick: () => alternar(p) },
+                      ]}
+                    />
+                  </div>
+
+                  <p className="mt-1 font-mono text-base font-bold text-ink">
+                    {p.preco_centavos === 0 ? 'Grátis' : brl(p.preco_centavos)}
+                  </p>
+                </div>
+
+                {/* Métricas organizadas e sóbrias */}
+                <div className="mt-5 border-t border-line/60 pt-3.5">
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span className="text-muted">Vendas</span>
+                      <p className="mt-0.5 font-mono text-sm font-semibold text-ink">
+                        {vendas[p.id] ?? 0}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-muted">Faturamento</span>
+                      <p className="mt-0.5 font-mono text-sm font-semibold text-ink">
+                        {brl(receita[p.id] ?? 0)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </article>
           ))}

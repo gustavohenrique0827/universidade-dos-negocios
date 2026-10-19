@@ -115,9 +115,7 @@ export default function Loja() {
     <main>
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-line/70 pb-16 pt-10 sm:pb-24 sm:pt-16">
-        {/* Ambient lighting blooms */}
-        <div aria-hidden className="pointer-events-none absolute -left-40 -top-40 size-[36rem] rounded-full bg-brand/10 blur-[120px]" />
-        <div aria-hidden className="pointer-events-none absolute -right-32 top-10 size-[32rem] rounded-full bg-purple-600/10 blur-[130px]" />
+        <div aria-hidden className="pointer-events-none absolute -left-40 -top-40 size-[36rem] rounded-full bg-brand/5 blur-[120px]" />
         <svg
           aria-hidden
           viewBox="0 0 800 300"

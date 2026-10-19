@@ -1,32 +1,81 @@
 /**
- * Capa do produto. Sem imagem enviada, gera uma capa tipográfica: cada produto recebe
- * uma paleta e uma composição própria, sempre com o ponto "fora da curva" em destaque.
+ * Capa do produto. Quando não há imagem personalizada enviada pelo produtor,
+ * exibe um layout editorial minimalista em tons escuros refinados e geometria sóbria.
  */
-const PALETAS = [['#ff6a1a', '#2a0f00'], ['#7a2bff', '#10062a'], ['#0fa968', '#03180f'], ['#d6204a', '#2a0610'], ['#2f7bff', '#06122a']]
-
-const COMPOSICOES: ((p: { x: number; y: number }) => React.ReactNode)[] = [
-  // curva de sino
-  ({ x, y }) => <><path d="M-5 80 C 30 80, 45 22, 80 22 S 130 80, 165 80" fill="none" stroke="#fff" strokeOpacity=".3" strokeWidth="2.5" /><circle cx={x} cy={y} r="5" fill="#ffc933" /></>,
-  // degraus
-  ({ x, y }) => <><path d="M0 84 H30 V68 H58 V52 H86 V36 H114 V20 H160" fill="none" stroke="#fff" strokeOpacity=".3" strokeWidth="2.5" /><circle cx={x} cy={y} r="5" fill="#ffc933" /></>,
-  // anéis
-  ({ x, y }) => <><g fill="none" stroke="#fff" strokeOpacity=".22" strokeWidth="2"><circle cx="120" cy="40" r="18" /><circle cx="120" cy="40" r="32" /><circle cx="120" cy="40" r="48" /></g><circle cx={x - 12} cy={y + 8} r="5" fill="#ffc933" /></>,
-  // barras
-  ({ x, y }) => <><g fill="#fff" fillOpacity=".16">{[0, 1, 2, 3, 4, 5].map((i) => <rect key={i} x={74 + i * 14} y={74 - (i + 1) * 8 - (i === 5 ? 12 : 0)} width="9" height={(i + 1) * 8 + (i === 5 ? 12 : 0)} rx="2" />)}</g><circle cx={x} cy={y + 2} r="5" fill="#ffc933" /></>,
-  // malha de pontos
-  ({ x, y }) => <><g fill="#fff" fillOpacity=".22">{Array.from({ length: 5 }, (_, r) => Array.from({ length: 9 }, (_, c) => <circle key={`${r}-${c}`} cx={64 + c * 11} cy={14 + r * 11} r="1.6" />))}</g><circle cx={x} cy={y} r="5" fill="#ffc933" /></>,
+const TONS = [
+  { bg: 'from-zinc-900 via-neutral-900 to-black', acento: 'text-zinc-500', linha: 'border-zinc-800/80', padrao: 'circulo' },
+  { bg: 'from-slate-900 via-zinc-950 to-black', acento: 'text-slate-500', linha: 'border-slate-800/80', padrao: 'linhas' },
+  { bg: 'from-stone-900 via-neutral-950 to-black', acento: 'text-stone-500', linha: 'border-stone-800/80', padrao: 'grade' },
+  { bg: 'from-neutral-900 via-zinc-900 to-stone-950', acento: 'text-neutral-500', linha: 'border-neutral-800/80', padrao: 'arco' },
 ]
 
-export default function Capa({ url, titulo, className = '' }: { url: string | null; titulo: string; className?: string }) {
-  if (url) return <img src={url} alt="" loading="lazy" className={`aspect-video w-full object-cover ${className}`} />
-  const h = [...titulo].reduce((n, c) => (n * 31 + c.charCodeAt(0)) >>> 0, 7)
-  const [a, b] = PALETAS[h % PALETAS.length]
-  const Comp = COMPOSICOES[(h >>> 3) % COMPOSICOES.length]
+export default function Capa({
+  url,
+  titulo,
+  className = '',
+  mostrarTitulo = false,
+}: {
+  url: string | null
+  titulo: string
+  className?: string
+  mostrarTitulo?: boolean
+}) {
+  if (url) {
+    return <img src={url} alt="" loading="lazy" className={`aspect-video w-full object-cover ${className}`} />
+  }
+
+  // Gera variação determinística baseada no título
+  const hash = [...titulo].reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) >>> 0, 7)
+  const tema = TONS[hash % TONS.length]
+
+  // Iniciais elegantes para o monograma da capa
+  const palavras = titulo.trim().split(/\s+/).filter(Boolean)
+  const iniciais = palavras.slice(0, 2).map((p) => p[0]?.toUpperCase()).join('') || 'UN'
+
   return (
-    <div className={`relative aspect-video w-full overflow-hidden ${className}`} style={{ background: `linear-gradient(135deg, ${a}, ${b})` }} aria-hidden>
-      <svg viewBox="0 0 160 90" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">{Comp({ x: 128, y: 16 })}</svg>
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent px-3 pb-2.5 pt-8">
-        <span className="line-clamp-2 font-display text-[15px] font-bold leading-tight text-white">{titulo}</span>
+    <div
+      className={`relative aspect-video w-full overflow-hidden bg-gradient-to-br ${tema.bg} select-none ${className}`}
+      aria-hidden
+    >
+      {/* Textura geométrica sutil e minimalista */}
+      <svg
+        className="absolute inset-0 h-full w-full opacity-[0.08]"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        stroke="currentColor"
+      >
+        <defs>
+          <pattern id={`grid-${hash}`} width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" strokeWidth="0.75" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill={`url(#grid-${hash})`} />
+      </svg>
+
+      {/* Destaque sutil de iluminação */}
+      <div className="absolute -top-12 -right-12 size-36 rounded-full bg-brand/10 blur-2xl pointer-events-none" />
+
+      {/* Monograma editorial centralizado */}
+      <div className="relative flex h-full flex-col justify-between p-4 sm:p-5">
+        <div className="flex items-center justify-between">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
+            Formação
+          </span>
+          <div className="size-1.5 rounded-full bg-brand/60" />
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="grid size-10 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/5 font-mono text-sm font-semibold tracking-wider text-zinc-300 backdrop-blur-xs">
+            {iniciais}
+          </div>
+          {mostrarTitulo && (
+            <p className="line-clamp-2 font-display text-sm font-semibold leading-snug text-white">
+              {titulo}
+            </p>
+          )}
+        </div>
+
+        <div className="h-0.5 w-8 rounded-full bg-brand/40" />
       </div>
     </div>
   )
